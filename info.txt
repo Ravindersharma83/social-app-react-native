@@ -1,0 +1,8 @@
+1- setting up stack navigation
+2- installing react native async storage
+3- npm i react-native-onboarding-swiper (for onboarding screen ui)
+
+4- installing react-native vector icons
+    - npm i react-native-vector-icons
+    - In (android/app/build.gradle) add this line :
+        (apply from: "../../node_modules/react-native-vector-icons/fonts.gradle")
