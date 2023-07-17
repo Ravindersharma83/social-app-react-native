@@ -6,3 +6,31 @@
     - npm i react-native-vector-icons
     - In (android/app/build.gradle) add this line :
         (apply from: "../../node_modules/react-native-vector-icons/fonts.gradle")
+
+5- Implementing Firebase and login , register and logout functionality.
+    A. Create a new project on firebase console
+    - Enter project name.
+    - Enable google analytics.
+    - Choose default account.
+    - Select android
+    - copy package name from your project (Ex:- com.googlelogin) (Make sure  "package_name" in google-services.json is matching with your "applicationId" in app gradle.)
+    - Enter nickname
+    - Now go to cd android / and run this command (./gradlew signingReport) this generate two keys (SHA-1,SHA-256)
+    - We have to use (debugAndroidTest) key options in our application.
+    - Copy SHA-1 key and paste it on our firebase console Debug signing certificate SHA-1
+    - Then Register our app and download (google-services.json) file.
+    - Then click on Next and then Continue to console.
+    - Now go to our project settings and add new fingerprint and paste the SHA-256 key while adding a new fingerprint.
+    - place google-services.json file inside of your project at the following location: /android/app/google-services.json
+
+    B. Configure Firebase with Android credentials
+        - In (/android/build.gradle) , add this line (classpath 'com.google.gms:google-services:4.3.15') inside dependency
+        - In (/android/app/build.gradle) , add this line at the bottom of file (apply plugin: 'com.google.gms.google-services')
+        - Also enable multidex
+            : In (/android/app/build.gradle) add this (multiDexEnabled true) inside (default config)
+            : and add this (implementation 'androidx.multidex:multidex:2.0.1') inside (dependency) 
+        - Run 
+        -: npm install --save @react-native-firebase/app
+        -: After completing step 2 , add (npm install @react-native-firebase/auth)
+
+    C. Create a context and provider for maintaining user login-logout states , and in our routes while use this context for managing our AppStack and AuthStack according to user signin.

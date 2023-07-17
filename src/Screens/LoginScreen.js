@@ -1,13 +1,16 @@
 import { StyleSheet, Text, View,TouchableOpacity,Image } from 'react-native';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import SocialButton from '../components/SocialButton';
+import { AuthContext } from '../navigation/AuthProvider';
 
 const LoginScreen = ({navigation}) => {
   const[email,setEmail] = useState(null);
   const[password,setPassword] = useState(null);
+
+  const {login} = useContext(AuthContext);
   return (
     <View style={styles.container}>
       <Image
@@ -33,7 +36,7 @@ const LoginScreen = ({navigation}) => {
 
         <FormButton
           buttonTitle='Sign In'
-          onPress={()=>alert('sign in clicked')}
+          onPress={()=>login(email,password)}
         />
 
           <SocialButton
