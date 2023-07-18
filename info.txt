@@ -34,3 +34,18 @@
         -: After completing step 2 , add (npm install @react-native-firebase/auth)
 
     C. Create a context and provider for maintaining user login-logout states , and in our routes while use this context for managing our AppStack and AuthStack according to user signin.
+
+
+
+6. Setting up Bottom Tab Navigation
+
+7. Creating HomeScreen and AddPostScreen Design using styles components
+    - npm install styled-components
+    - npm i react-native-action-button (For action button) on (AddPostScreen.js)
+    - After installing action-button package we encounter two errors (component will receive props and animated use native driver) , to resolve these please add this 
+        - Go to node_modules/react-native-action-button/ActionButton.js
+            - UNSAFE_componentWillReceiveProps(nextProps) (line 42)
+            - if (animate) {
+                Animated.spring(this.anim, { toValue: 1, useNativeDriver:false }).start();
+               } (318)
+            - Animated.spring(this.anim, { toValue: 0, useNativeDriver:false }).start(); (331)
