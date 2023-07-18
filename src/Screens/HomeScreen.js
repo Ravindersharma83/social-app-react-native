@@ -4,11 +4,12 @@ import FormButton from '../components/FormButton'
 import { AuthContext } from '../navigation/AuthProvider'
 
 const HomeScreen = () => {
-    const {user,logout} = useContext(AuthContext);
+    const {user} = useContext(AuthContext);
   return (
-    <View>
-      <Text>Welcome {user.uid}</Text>
-      <FormButton buttonTitle='Logout' onPress={()=> logout()}/>
+    <View style={{flex:1,justifyContent:'center',alignItems:'center',padding:20}}>
+      <Text style={{fontSize:20}}>Welcome {user.uid}</Text>
+      <Text style={{fontSize:20}}>Welcome {user.uid}</Text>
+      <Text style={{fontSize:20}}>Welcome {user.uid}</Text>
     </View>
   )
 }

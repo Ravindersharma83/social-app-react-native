@@ -39,14 +39,6 @@ const LoginScreen = ({navigation}) => {
           onPress={()=>login(email,password)}
         />
 
-          <SocialButton
-            buttonTitle="Sign In with Google"
-            btnType="google"
-            color="#de4d41"
-            backgroundColor="#f5e7ea"
-            onPress={() => alert('sign in clicked')}
-          />
-
         <TouchableOpacity
           style={styles.forgotButton}
           onPress={()=> navigation.navigate('Signup')}
