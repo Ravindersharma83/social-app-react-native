@@ -81,6 +81,7 @@ android {
         versionCode 1
         multiDexEnabled true
         versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
     }
     signingConfigs {
         debug {

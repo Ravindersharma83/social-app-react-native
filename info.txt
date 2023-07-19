@@ -49,3 +49,19 @@
                 Animated.spring(this.anim, { toValue: 1, useNativeDriver:false }).start();
                } (318)
             - Animated.spring(this.anim, { toValue: 0, useNativeDriver:false }).start(); (331)
+
+
+8. Fetch images using react-native-image-crop-picker and store them in firebase cloud storage.
+    - npm i react-native-image-crop-picker
+    - In (android/build.gradle) add the following :- (in repositories)
+        - maven { url 'https://maven.google.com' }
+        - maven { url "https://www.jitpack.io" }
+    - In (android/app/build.gradle)
+        - vectorDrawables.useSupportLibrary = true (in defaultConfig)
+    - In (app/src/main/AndroidManifest.xml) enable camera support permissions
+        - <uses-permission android:name="android.permission.CAMERA"/>
+        - <uses-feature android:name="android.hardware.camera" android:required="false" />
+        - <uses-feature android:name="android.hardware.camera.front" android:required="false" />
+
+    - Install firebase stoarage (npm install @react-native-firebase/storage)
+    - Follow the code in AddPostScreen.js file for uploading the image
