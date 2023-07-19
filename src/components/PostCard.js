@@ -40,8 +40,11 @@ const PostCard = ({item}) => {
   return (
     <Card>
     <UserInfo>
-      <UserImg
+      {/* <UserImg
         source={item.userImg}
+      /> */}
+       <UserImg
+        source={{uri:item.userImg}}
       />
       <UserInfoText>
         <TouchableOpacity>
@@ -49,11 +52,11 @@ const PostCard = ({item}) => {
             {item.userName}
           </UserName>
         </TouchableOpacity>
-        <PostTime>{item.postTime}</PostTime>
+        <PostTime>{item.postTime.toString()}</PostTime>
       </UserInfoText>
     </UserInfo>
     <PostText>{item.post}</PostText>
-    {item.postImg != 'none' ? <PostImg source={item.postImg} /> : <Divider /> }
+    {item.postImg != null ? <PostImg source={{uri:item.postImg}} /> : <Divider /> }
     
     <InteractionWrapper>
       <Interaction active={item.liked}>

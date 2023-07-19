@@ -11,6 +11,7 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Container} from '../styles/FeedStyles';
 import PostCard from '../components/PostCard';
+import firestore from '@react-native-firebase/firestore';
 
 
 const Posts = [
@@ -77,10 +78,51 @@ const Posts = [
 ];
 
 const HomeScreen = () => {
+  const[posts,setPosts] = useState(null);
+  const[loading,setLoading] = useState(true);
+
+  useEffect(()=>{
+    const fetchPosts = async ()=>{
+      const list = [];
+      try {
+        await firestore()
+          .collection('posts')
+          .orderBy('postTime', 'desc')
+          .get()
+          .then((querySnapshot) => {
+            // console.log('Total Posts: ', querySnapshot.size);
+            querySnapshot.forEach((doc) => {
+              const {userId,post,postImg,postTime,likes,comments,} = doc.data();
+              list.push({
+                id: doc.id,
+                userId,
+                userName: 'Test Name',
+                userImg:
+                  'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
+                postTime: postTime,
+                post,
+                postImg,
+                liked: false,
+                likes,
+                comments,
+              });
+            });
+          })
+          // console.log('posts',list);
+          setPosts(list);
+          if(loading){
+            setLoading(false);
+          }
+      } catch (error) {
+        console.log('err--',error);
+      }
+    }
+    fetchPosts();
+  },[])
   return (
     <Container>
       <FlatList
-        data={Posts}
+        data={posts}
         renderItem={({item})=> <PostCard item={item}/>}
         keyExtractor={item=>item.id}
         showsVerticalScrollIndicator={false}
