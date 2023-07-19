@@ -38,7 +38,14 @@ const AddPostScreen = () => {
     });
   }
 
-  const submitPost = async()=>{
+  const submitPost = async () => {
+    const imageUrl = await uploadImage();
+    console.log('url',imageUrl);
+    setImage(null); // after image uploaded set image to null again.
+
+  }
+
+  const uploadImage = async()=>{
     const uploadUri = image;
     let filename = uploadUri.substring(uploadUri.lastIndexOf('/')+1); // for getting image name (abc.jpg)
 
@@ -50,7 +57,8 @@ const AddPostScreen = () => {
     setUploading(true);
     setTransferred(0);
 
-    const task = storage().ref(filename).putFile(uploadUri);
+    const storageRef = storage().ref(`photos/${filename}`)
+    const task = storageRef.putFile(uploadUri);
 
     // set transferred state
     task.on('state_changed', taskSnapshot => {
@@ -61,16 +69,17 @@ const AddPostScreen = () => {
 
     try {
       await task;
+      const url = await storageRef.getDownloadURL();
       setUploading(false);
       Alert.alert(
         'Image uploaded!',
         'Your Image has been uploaded Successfully!'
       );
+      return url;
     } catch (error) {
       console.log(error);
+      return null;
     }
-
-    setImage(null); // after image uploaded set image to null again.
   }
   return (
     <View style={styles.container}>
