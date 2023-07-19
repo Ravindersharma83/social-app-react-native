@@ -1,5 +1,5 @@
 import { ActivityIndicator, Alert, Platform, StyleSheet, Text, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { AddImage, InputField, InputWrapper, StatusWrapper, SubmitBtn, SubmitBtnText } from '../styles/AddPost';
 
 import ActionButton from 'react-native-action-button';
@@ -7,12 +7,17 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
+import { AuthContext } from '../navigation/AuthProvider';
 
 const AddPostScreen = () => {
+
+  const {user} = useContext(AuthContext);
 
   const[image,setImage] = useState(null);
   const[uploading,setUploading] = useState(false);
   const[transferred,setTransferred] = useState(0);
+  const[post,setPost] = useState(null);
 
   const openCamera = ()=>{
     ImagePicker.openCamera({
@@ -42,6 +47,27 @@ const AddPostScreen = () => {
     const imageUrl = await uploadImage();
     console.log('url',imageUrl);
     setImage(null); // after image uploaded set image to null again.
+    firestore()
+    .collection('posts')
+    .add({
+      userId:user.uid,
+      post:post,
+      postImg:imageUrl,
+      postTime:firestore.Timestamp.fromDate(new Date()),
+      likes:null,
+      comments:null
+    })
+    .then(()=>{
+      console.log('added');
+      Alert.alert(
+        'Post published!',
+        'Your Post has been published Successfully!'
+      );
+      setPost(null);
+    })
+    .catch((error)=>{
+      console.log('error--',error);
+    })
 
   }
 
@@ -89,6 +115,8 @@ const AddPostScreen = () => {
                 placeholder="What's on your mind?"
                 multiline
                 numberOfLines={4}
+                value={post}
+                onChangeText={(content)=>setPost(content)}
             />
             {uploading ? (
               <StatusWrapper>
