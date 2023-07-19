@@ -65,3 +65,7 @@
 
     - Install firebase stoarage (npm install @react-native-firebase/storage)
     - Follow the code in AddPostScreen.js file for uploading the image
+
+9. Applying fetch,add and delete post functionality using firebase firestore and storage.
+    - (npm install @react-native-firebase/firestore) installing firestore (make sure to enable multidex to true)
+    - (npm install moment --save ) library used for modifying date and time.
