@@ -20,7 +20,7 @@ import { AuthContext } from '../navigation/AuthProvider';
 import moment from 'moment';
 import ProgressiveImage from './ProgressiveImage';
 
-const PostCard = ({item, onDelete}) => {
+const PostCard = ({item, onDelete, onPress}) => {
   const {user} = useContext(AuthContext);
     likeIcon = item.liked ? 'heart' : 'heart-outline';
     likeIconColor = item.liked ? '#2e64e5' : '#333';
@@ -51,7 +51,7 @@ const PostCard = ({item, onDelete}) => {
         source={{uri:item.userImg}}
       />
       <UserInfoText>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={onPress}>
           <UserName>
             {item.userName}
           </UserName>
