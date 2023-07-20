@@ -33,8 +33,83 @@ const EditProfileScreen = () => {
   const [userData, setUserData] = useState(null);
   const[visible,setVisible] = useState(false);
 
-  const handleUpdate = ()=>{
-    console.log('userData',userData);
+  const getUser = async ()=>{
+    const currentUser = await firestore()
+    .collection('users')
+    .doc(user.uid)
+    .get()
+    .then((documentSnapshot)=>{
+      if(documentSnapshot.exists){
+        console.log('current user data--',documentSnapshot.data());
+        setUserData(documentSnapshot.data());
+      }
+    })
+  }
+
+  const handleUpdate = async ()=>{
+    let imgUrl = await uploadImage();
+    if(imgUrl == null && userData.userImg){
+      imgUrl = userData.userImg
+    }
+
+    firestore()
+    .collection('users')
+    .doc(user.uid)
+    .update({
+      fname:userData.fname,
+      lname:userData.lname,
+      about:userData.about,
+      phone:userData.phone,
+      country:userData.country,
+      city:userData.city,
+      userImg:imgUrl
+    })
+    .then(()=>{
+      console.log('user updated');
+      Alert.alert(
+        'Profile Updated!',
+        'Your profile has been updated successfully!'
+      )
+    })
+
+  }
+
+  const uploadImage = async()=>{
+    if(image === null){
+      return null;
+    }
+    const uploadUri = image;
+    let filename = uploadUri.substring(uploadUri.lastIndexOf('/')+1); // for getting image name (abc.jpg)
+
+    // add timestamp to filename for storing each image as unique name in cloud storage
+    const extension = filename.split('.').pop();
+    const name = filename.split('.').slice(0, -1).join('.');
+    filename = name + Date.now() + '.' + extension;  // abc20230101.jpg
+    
+    setUploading(true);
+    setTransferred(0);
+
+    const storageRef = storage().ref(`photos/${filename}`)
+    const task = storageRef.putFile(uploadUri);
+
+    // set transferred state
+    task.on('state_changed', taskSnapshot => {
+      // console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
+      setTransferred(Math.round(taskSnapshot.bytesTransferred/taskSnapshot.totalBytes) * 100);
+      // console.log('progres---',transferred);
+    });
+
+    try {
+      await task;
+      const url = await storageRef.getDownloadURL();
+      setUploading(false);
+      setImage(null);
+      return url;
+
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   }
 
   const takePhotoFromCamera = () => {
@@ -64,6 +139,10 @@ const EditProfileScreen = () => {
       setVisible(false);
     });
   };
+  
+  useEffect(() => {
+    getUser();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -84,7 +163,12 @@ const EditProfileScreen = () => {
               }}>
               <ImageBackground
                 source={{
-                  uri: image ? image : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
+                  uri: image
+                    ? image
+                    : userData
+                    ? userData.userImg ||
+                      'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
+                    : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
                 }}
                 style={{height: 100, width: 100}}
                 imageStyle={{borderRadius: 15}}>
