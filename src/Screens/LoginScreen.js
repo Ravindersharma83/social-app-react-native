@@ -16,7 +16,7 @@ const LoginScreen = ({navigation}) => {
       <Image
         source={require('../Assets/images/rn-social-logo.png')}
         style={styles.logo}/>
-        <Text style={styles.text}>RN Social App</Text>
+        <Text style={styles.text}>Socialite Posts</Text>
         <FormInput
           labelValue={email}
           onChangeText={(userEmail)=>setEmail(userEmail)}

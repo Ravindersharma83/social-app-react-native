@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View,TouchableOpacity } from 'react-native'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import firestore from '@react-native-firebase/firestore'
 import {
     Container,
     Card,
@@ -22,6 +23,22 @@ import ProgressiveImage from './ProgressiveImage';
 
 const PostCard = ({item, onDelete, onPress}) => {
   const {user} = useContext(AuthContext);
+  const [userData, setUserData] = useState(null);
+
+  const getUser = async ()=>{
+    await firestore()
+    .collection('users')
+    .doc(item.userId)
+    .get()
+    .then((documentSnapshot)=>{
+      if(documentSnapshot.exists){
+        console.log('current user data--',documentSnapshot.data());
+        setUserData(documentSnapshot.data());
+      }
+    })
+  }
+
+
     likeIcon = item.liked ? 'heart' : 'heart-outline';
     likeIconColor = item.liked ? '#2e64e5' : '#333';
 
@@ -41,6 +58,10 @@ const PostCard = ({item, onDelete, onPress}) => {
         commentText = 'Comment';
       }
 
+      useEffect(()=>{
+        getUser();
+      },[])
+
   return (
     <Card>
     <UserInfo>
@@ -48,12 +69,12 @@ const PostCard = ({item, onDelete, onPress}) => {
         source={item.userImg}
       /> */}
        <UserImg
-        source={{uri:item.userImg}}
+                  source={{uri: userData ? userData.userImg || 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg' : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'}}
       />
       <UserInfoText>
         <TouchableOpacity onPress={onPress}>
           <UserName>
-            {item.userName}
+          {userData ? userData.fname || 'Test' : 'Test'} {userData ? userData.lname || 'User' : 'User'}
           </UserName>
         </TouchableOpacity>
         {/* <PostTime>{item.postTime.toString()}</PostTime> */}

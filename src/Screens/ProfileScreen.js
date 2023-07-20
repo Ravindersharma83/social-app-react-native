@@ -12,13 +12,27 @@ const ProfileScreen = ({navigation,route}) => {
     const[posts,setPosts] = useState([]);
     const[loading,setLoading] = useState(true);
     const[deleted,setDeleted] = useState(false);
+    const [userData, setUserData] = useState(null);
+
+    const getUser = async ()=>{
+      await firestore()
+      .collection('users')
+      .doc(route.params ? route.params.userId :user.uid)
+      .get()
+      .then((documentSnapshot)=>{
+        if(documentSnapshot.exists){
+          console.log('current user data--',documentSnapshot.data());
+          setUserData(documentSnapshot.data());
+        }
+      })
+    }
   
     const fetchPosts = async ()=>{
       const list = [];
       try {
         await firestore()
           .collection('posts')
-          .where('userId','==',user.uid)
+          .where('userId','==',route.params ? route.params.userId :user.uid)
           .orderBy('postTime', 'desc')
           .get()
           .then((querySnapshot) => {
@@ -50,8 +64,11 @@ const ProfileScreen = ({navigation,route}) => {
       }
     }
     useEffect(()=>{
+      getUser();
       fetchPosts();
-    },[])
+      // for getting data updated from editProfileScreen
+      navigation.addListener("focus",()=>setLoading(!loading));
+    },[navigation,loading])
 
     const handleDelete = () =>{
 
@@ -63,13 +80,13 @@ const ProfileScreen = ({navigation,route}) => {
         contentContainerStyle={{justifyContent:'center',alignItems:'center'}}
         showsVerticalScrollIndicator={false}
       >
-      <Image
-        style={styles.userImg}
-        source={require('../Assets/images/user-8.jpg')}
-      />
-      <Text style={styles.userName}>Jenny Doe</Text>
-      <Text>{route.params ? route.params.userId : user.uid}</Text>
-      <Text style={styles.aboutUser}>About user info About user info About user info About user info About user info About user info About user info</Text>
+        <Image
+          style={styles.userImg}
+          source={{uri: userData ? userData.userImg || 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg' : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'}}
+        />
+      <Text style={styles.userName}>{userData ? userData.fname || 'Test' : 'Test'} {userData ? userData.lname || 'User' : 'User'}</Text>
+      {/* <Text>{route.params ? route.params.userId : user.uid}</Text> */}
+      <Text style={styles.aboutUser}>{userData ? userData.about || 'No details added' : 'No details added'}</Text>
 
       <View style={styles.userBtnWrapper}>
         {route.params ? (
@@ -96,7 +113,7 @@ const ProfileScreen = ({navigation,route}) => {
       <View>
         <View style={styles.userInfoWrapper}>
           <View style={styles.userInfoItem}>
-            <Text style={styles.userInfoTitle}>10</Text>
+            <Text style={styles.userInfoTitle}>{posts.length}</Text>
             <Text style={styles.userInfoSubTitle}>Posts</Text>
           </View>
           <View style={styles.userInfoItem}>
