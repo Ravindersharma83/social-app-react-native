@@ -96,7 +96,7 @@ const MessageStack = ({navigation}) => (
       name="Chat"
       component={ChatScreen}
       options={({route}) => ({
-        title: route.params.userName,
+        title: route.params.name ? route.params.name : 'Test User',
         headerBackTitleVisible: false,
       })}
     />

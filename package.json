@@ -24,6 +24,7 @@
     "react-native": "0.72.3",
     "react-native-action-button": "^2.8.5",
     "react-native-gesture-handler": "^2.12.0",
+    "react-native-gifted-chat": "^2.4.0",
     "react-native-image-crop-picker": "^0.40.0",
     "react-native-linear-gradient": "^2.7.3",
     "react-native-modal": "^13.0.1",

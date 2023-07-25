@@ -1,9 +1,9 @@
-import { StyleSheet, Text, View, FlatList, Image } from 'react-native'
+import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity } from 'react-native'
 import React,{useState,useEffect, useContext} from 'react'
 import firestore from '@react-native-firebase/firestore'
 import { AuthContext } from '../navigation/AuthProvider';
 
-const MessagesScreen = () => {
+const MessagesScreen = ({navigation}) => {
   const {user, logout} = useContext(AuthContext);
   const [users,setUsers] = useState(null);
   const getUsers = async () =>{
@@ -20,6 +20,7 @@ const MessagesScreen = () => {
 
   const RenderCard = ({item})=>{
     return(
+      <TouchableOpacity onPress={()=>navigation.navigate('Chat',{name:item.fname,chatUser:item})}>
       <View style={styles.myCard}>
         {item.userImg ? (<Image source={{uri:item.userImg}} style={styles.img}/>) : (<Image source={require("../Assets/images/user.png")} style={styles.img}/>)}
         <View>
@@ -31,6 +32,7 @@ const MessagesScreen = () => {
           </Text>
         </View>
       </View>
+      </TouchableOpacity>
     )
   }
   return (
