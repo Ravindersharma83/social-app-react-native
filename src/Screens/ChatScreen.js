@@ -11,26 +11,51 @@ const ChatScreen = ({route,navigation}) => {
   const loggedInUserId = user.uid;
   const otherUserId = route.params.chatUser.uid
 
-  const getAllMessages = async () =>{
-    const docid = loggedInUserId > otherUserId ? otherUserId+"-"+loggedInUserId : loggedInUserId+"-"+otherUserId;
-    const querySnap = await firestore().collection('chatrooms')
-    .doc(docid)
-    .collection('messages')
-    .orderBy('createdAt','desc')
-    .get()
+  // const getAllMessages = async () =>{
+  //   const docid = loggedInUserId > otherUserId ? otherUserId+"-"+loggedInUserId : loggedInUserId+"-"+otherUserId;
+  //   const querySnap = await firestore().collection('chatrooms')
+  //   .doc(docid)
+  //   .collection('messages')
+  //   .orderBy('createdAt','desc')
+  //   .get()
 
-    const allMsg = querySnap.docs.map(docSnap=>{
-      return {
-        ...docSnap.data(),
-        createdAt:docSnap.data().createdAt.toDate()
-      }
-    })
+  //   const allMsg = querySnap.docs.map(docSnap=>{
+  //     return {
+  //       ...docSnap.data(),
+  //       createdAt:docSnap.data().createdAt.toDate()
+  //     }
+  //   })
 
-    setMessages(allMsg);
-  }
+  //   setMessages(allMsg);
+  // }
 
   useEffect(() => {
-    getAllMessages(); // function to fetch logged in user chat with it's corresponding chat user
+   // getAllMessages(); // function to fetch logged in user chat with it's corresponding chat user
+
+   // for accessing chat messages realtime
+   const docid = loggedInUserId > otherUserId ? otherUserId+"-"+loggedInUserId : loggedInUserId+"-"+otherUserId;
+   const messageRef = firestore().collection('chatrooms')
+   .doc(docid)
+   .collection('messages')
+   .orderBy('createdAt','desc');
+
+   messageRef.onSnapshot((querySnap)=>{
+     const allMsg = querySnap.docs.map(docSnap=>{
+      const data = docSnap.data();
+      if(data.createdAt){
+        return {
+          ...docSnap.data(),
+          createdAt:docSnap.data().createdAt.toDate()
+        }
+      }else{
+        return {
+          ...docSnap.data(),
+          createdAt:new Date()
+        }
+      }
+     })
+     setMessages(allMsg);
+   })
   }, [])
 
   // onSend function execute when user sent messages
