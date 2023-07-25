@@ -25,13 +25,16 @@ export const AuthProvider = ({children}) =>{
                         .then(() => {
                           //Once the user creation has happened successfully, we can add the currentUser into firestore
                           //with the appropriate details.
-                          firestore().collection('users').doc(auth().currentUser.uid)
+                          // Get the current user UID
+                          const currentUserUid = auth().currentUser.uid;
+                          firestore().collection('users').doc(currentUserUid)
                           .set({
                               fname: '',
                               lname: '',
                               email: email,
                               createdAt: firestore.Timestamp.fromDate(new Date()),
                               userImg: null,
+                              uid:currentUserUid
                           })
                           //ensure we catch any errors at this stage to advise us if something does go wrong
                           .catch(error => {

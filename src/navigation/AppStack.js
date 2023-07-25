@@ -91,7 +91,7 @@ const FeedStack = ({navigation}) => (
 
 const MessageStack = ({navigation}) => (
   <Stack.Navigator>
-    <Stack.Screen name="Messages" component={MessagesScreen} />
+    <Stack.Screen name="messageScreen" component={MessagesScreen} options={{title:'Chat'}} />
     <Stack.Screen
       name="Chat"
       component={ChatScreen}
@@ -106,7 +106,7 @@ const MessageStack = ({navigation}) => (
 const ProfileStack = ({navigation}) => (
   <Stack.Navigator>
     <Stack.Screen
-      name="Profile"
+      name="profileScreen"
       component={ProfileScreen}
       options={{
         headerShown: false,
@@ -143,10 +143,7 @@ const AppStack = () => {
 
   return (
     <Tab.Navigator
-      tabBarOptions={{
-        activeTintColor: '#2e64e5',
-      }}
-      screenOptions={{ headerShown: false }}>
+      screenOptions={{ headerShown: false, activeTintColor: '#2e64e5' }}>
       <Tab.Screen
         name="Home"
         component={FeedStack}

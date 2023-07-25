@@ -32,7 +32,7 @@ const PostCard = ({item, onDelete, onPress}) => {
     .get()
     .then((documentSnapshot)=>{
       if(documentSnapshot.exists){
-        console.log('current user data--',documentSnapshot.data());
+        // console.log('current user data--',documentSnapshot.data());
         setUserData(documentSnapshot.data());
       }
     })
