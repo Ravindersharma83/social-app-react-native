@@ -15,6 +15,7 @@ import EditProfileScreen from '../Screens/EditProfileScreen';
 import MessagesScreen from '../Screens/MessagesScreen';
 
 import Octicons from 'react-native-vector-icons/Octicons';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 
 const Stack = createNativeStackNavigator();
@@ -142,17 +143,6 @@ const ProfileStack = ({navigation}) => (
 );
 
 const AppStack = () => {
-  // const getTabBarVisibility = (route) => {
-  //   const routeName = route.state
-  //     ? route.state.routes[route.state.index].name
-  //     : '';
-
-  //   if (routeName === 'Chat') {
-  //     return false;
-  //   }
-  //   return true;
-  // };
-
   return (
     <Tab.Navigator
       screenOptions={{ headerShown: false, activeTintColor: '#2e64e5' }}>
@@ -174,12 +164,15 @@ const AppStack = () => {
       <Tab.Screen
         name="Messages"
         component={MessageStack}
-        options={{
-          // tabBarVisible: getTabBarVisibility(route),
-          // Or Hide tabbar when push!
-          // https://github.com/react-navigation/react-navigation/issues/7677
-          // tabBarVisible: route.state && route.state.index === 0,
-          // tabBarLabel: 'Home',
+        options={({ route }) => ({
+          tabBarStyle: ((route) => {
+            const routeName = getFocusedRouteNameFromRoute(route) ?? ""
+            console.log(routeName)
+            if (routeName === 'Chat') {
+              return { display: "none" }
+            }
+            return
+          })(route),
           tabBarIcon: ({color, size}) => (
             <Ionicons
               name="chatbox-ellipses-outline"
@@ -187,7 +180,17 @@ const AppStack = () => {
               size={size}
             />
           ),
-        }}
+        })}
+        // options={({route}) => ({
+          // tabBarIcon: ({color, size}) => (
+          //   <Ionicons
+          //     name="chatbox-ellipses-outline"
+          //     color={color}
+          //     size={size}
+          //   />
+          // ),
+        // })}
+        
       />
       <Tab.Screen
         name="Profile"
