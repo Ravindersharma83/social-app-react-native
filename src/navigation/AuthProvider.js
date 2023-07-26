@@ -15,6 +15,13 @@ export const AuthProvider = ({children}) =>{
                 login: async(email,password) => {
                     try {
                         await auth().signInWithEmailAndPassword(email,password)
+                        const currentUserUid = auth().currentUser.uid;
+                        firestore()
+                        .collection('users')
+                        .doc(currentUserUid)
+                        .update({
+                          isLoggedIn:true,
+                        })
                     } catch (error) {
                         alert(error);
                     }
@@ -34,7 +41,8 @@ export const AuthProvider = ({children}) =>{
                               email: email,
                               createdAt: firestore.Timestamp.fromDate(new Date()),
                               userImg: null,
-                              uid:currentUserUid
+                              uid:currentUserUid,
+                              isLoggedIn:true
                           })
                           //ensure we catch any errors at this stage to advise us if something does go wrong
                           .catch(error => {
@@ -51,6 +59,13 @@ export const AuthProvider = ({children}) =>{
                 },
                 logout: async() => {
                     try {
+                        const currentUserUid = auth().currentUser.uid;
+                        firestore()
+                        .collection('users')
+                        .doc(currentUserUid)
+                        .update({
+                          isLoggedIn:false,
+                        })
                         await auth().signOut();
                     } catch (error) {
                         alert(error);

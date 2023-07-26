@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, { useState,useEffect, useContext } from 'react'
-import { GiftedChat } from 'react-native-gifted-chat'
+import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat'
 import { AuthContext } from '../navigation/AuthProvider';
 import firestore from '@react-native-firebase/firestore'
 
@@ -78,13 +78,44 @@ const ChatScreen = ({route,navigation}) => {
   }
 
   return (
-    <View style={{flex:1}}>
+    <View style={{flex:1, backgroundColor:'#fff'}}>
        <GiftedChat
           messages={messages}
           onSend={messages => onSend(messages)}
           user={{
             _id: loggedInUserId,
-      }}
+          }}
+          renderBubble={props => {
+            return (
+              <Bubble
+                {...props}
+                textStyle={{
+                  right: {
+                    color:'#fff',
+                  },
+                }}
+                wrapperStyle={{
+                  left: {
+                    backgroundColor: 'white',
+                    borderColor:'gray',
+                    borderWidth:1
+                  },
+                  right: {
+                    backgroundColor: 'blue',
+                    borderColor:'gray',
+                    borderWidth:1
+                  },
+                }}
+              />
+            );
+          }}
+
+          renderInputToolbar={(props)=>{
+            return <InputToolbar {...props} 
+              containerStyle={{borderTopWidth:1.5,borderTopColor:'blue'}}
+              textInputStyle={{color:'black'}}
+            />
+          }}
     />
     </View>
   )

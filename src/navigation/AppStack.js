@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, TouchableOpacity, Text} from 'react-native';
+import {View, TouchableOpacity, Text, Image} from 'react-native';
 import HomeScreen from '../Screens/HomeScreen';
 import ChatScreen from '../Screens/ChatScreen';
 import ProfileScreen from '../Screens/ProfileScreen';
@@ -13,6 +13,9 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import AddPostScreen from '../Screens/AddPostScreen';
 import EditProfileScreen from '../Screens/EditProfileScreen';
 import MessagesScreen from '../Screens/MessagesScreen';
+
+import Octicons from 'react-native-vector-icons/Octicons';
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -91,12 +94,21 @@ const FeedStack = ({navigation}) => (
 
 const MessageStack = ({navigation}) => (
   <Stack.Navigator>
-    <Stack.Screen name="messageScreen" component={MessagesScreen} options={{title:'Chat'}} />
+    <Stack.Screen name="messageScreen" component={MessagesScreen} options={{title:'Chat',headerTintColor:'blue'}} />
     <Stack.Screen
       name="Chat"
       component={ChatScreen}
-      options={({route}) => ({
-        title: route.params.name ? route.params.name : 'Test User',
+      options={({ route }) => ({
+        headerTitle: () => (
+          <View>
+            <Text>{route.params?.name ? route.params.name : 'Test User'}</Text>
+            <View style={{flexDirection:'row'}}>
+              <Text style={{color:route.params.status == "Online" ? 'green' : 'red', marginRight:10}}>{route.params?.status}</Text>
+              <Octicons name='dot-fill' size={25} color={route.params.status == "Online" ? 'green' : 'red'} />
+            </View>
+          </View>
+        ),
+        headerTintColor:'blue',
         headerBackTitleVisible: false,
       })}
     />
