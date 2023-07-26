@@ -20,7 +20,7 @@ const MessagesScreen = ({navigation}) => {
 
   // useEffect(() => {
     // AppState API to check whether your app is in the foreground (open) or in the background (closed or inactive). The AppState API provides a way to access the current state of the app.
-    
+
   //   const handleAppStateChange = (nextAppState) => {
   //     setAppState(nextAppState);
   //   };
@@ -58,7 +58,35 @@ const MessagesScreen = ({navigation}) => {
       setLastMsg(allMsg);
     }
     useEffect(()=>{
-      getAllMessages();
+      // getAllMessages();
+    const messageRef = firestore().collection('chatrooms')
+   .doc(docid)
+   .collection('messages')
+   .orderBy('createdAt','desc').limit(1);
+
+   const unsubscribe = messageRef.onSnapshot((querySnap)=>{
+     const allMsg = querySnap.docs.map(docSnap=>{
+      const data = docSnap.data();
+      if(data.createdAt){
+        return {
+          ...docSnap.data(),
+          createdAt:docSnap.data().createdAt.toDate()
+        }
+      }else{
+        return {
+          ...docSnap.data(),
+          createdAt:new Date()
+        }
+      }
+     })
+     setLastMsg(allMsg);
+   })
+
+     // Cleanup function
+    return () => {
+      // Unsubscribe the snapshot listener when the component unmounts
+      unsubscribe();
+    };
       
     },[])
 

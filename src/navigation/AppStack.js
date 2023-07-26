@@ -102,8 +102,11 @@ const MessageStack = ({navigation}) => (
       options={({ route }) => ({
         headerTitle: () => (
           <View>
-            <Text>{route.params?.name ? route.params.name : 'Test User'}</Text>
-            <View style={{flexDirection:'row'}}>
+             <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                <Image source={{uri:route.params.chatUser.userImg}} style={{marginLeft:-20,height:50,width:50,borderRadius:25,position:'relative',top:10}} />
+              <Text style={{fontSize:24,marginLeft:10}}>{route.params?.name ? route.params.name : 'Test User'}</Text>
+             </View>
+            <View style={{flexDirection:'row',marginLeft:50,position:'relative',top:-10}}>
               <Text style={{color:route.params.status == "Online" ? 'green' : 'red', marginRight:10}}>{route.params?.status}</Text>
               <Octicons name='dot-fill' size={25} color={route.params.status == "Online" ? 'green' : 'red'} />
             </View>

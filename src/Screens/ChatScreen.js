@@ -6,7 +6,21 @@ import firestore from '@react-native-firebase/firestore'
 
 const ChatScreen = ({route,navigation}) => {
   const {user, logout} = useContext(AuthContext);
+  const [userData, setUserData] = useState(null);
   const [messages, setMessages] = useState([]);
+
+  const getUser = async ()=>{
+    await firestore()
+    .collection('users')
+    .doc(user.uid)
+    .get()
+    .then((documentSnapshot)=>{
+      if(documentSnapshot.exists){
+        console.log('current user data--',documentSnapshot.data());
+        setUserData(documentSnapshot.data());
+      }
+    })
+  }
 
   const loggedInUserId = user.uid;
   const otherUserId = route.params.chatUser.uid
@@ -30,6 +44,8 @@ const ChatScreen = ({route,navigation}) => {
   // }
 
   useEffect(() => {
+    getUser();
+    console.log('login user',user);
    // getAllMessages(); // function to fetch logged in user chat with it's corresponding chat user
 
    // for accessing chat messages realtime
@@ -39,7 +55,7 @@ const ChatScreen = ({route,navigation}) => {
    .collection('messages')
    .orderBy('createdAt','desc');
 
-   messageRef.onSnapshot((querySnap)=>{
+   const unsubscribe = messageRef.onSnapshot((querySnap)=>{
      const allMsg = querySnap.docs.map(docSnap=>{
       const data = docSnap.data();
       if(data.createdAt){
@@ -56,6 +72,12 @@ const ChatScreen = ({route,navigation}) => {
      })
      setMessages(allMsg);
    })
+
+    // Cleanup function
+    return () => {
+      // Unsubscribe the snapshot listener when the component unmounts
+      unsubscribe();
+    };
   }, [])
 
   // onSend function execute when user sent messages
@@ -65,7 +87,11 @@ const ChatScreen = ({route,navigation}) => {
       ...msg,
       sentBy:loggedInUserId,
       sentTo:otherUserId,
-      createdAt:new Date()
+      createdAt:new Date(),
+      user: {
+        _id: loggedInUserId,
+        avatar: userData.userImg,
+      },
     }
     setMessages(previousMessages => GiftedChat.append(previousMessages, myMsg));
     const docid = loggedInUserId > otherUserId ? otherUserId+"-"+loggedInUserId : loggedInUserId+"-"+otherUserId;

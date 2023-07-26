@@ -15,6 +15,8 @@ import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
+import { useFocusEffect } from '@react-navigation/native';
+
 const HomeScreen = ({navigation}) => {
   const[posts,setPosts] = useState(null);
   const[loading,setLoading] = useState(true);
@@ -58,6 +60,14 @@ const HomeScreen = ({navigation}) => {
   useEffect(()=>{
     fetchPosts();
   },[])
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchPosts();
+
+      // return () => unsubscribe();
+    }, [posts])
+  );
 
   useEffect(()=>{
     fetchPosts();
