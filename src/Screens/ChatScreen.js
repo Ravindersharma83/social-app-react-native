@@ -1,8 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Alert, StyleSheet, Text, View,TouchableOpacity } from 'react-native'
 import React, { useState,useEffect, useContext } from 'react'
 import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat'
 import { AuthContext } from '../navigation/AuthProvider';
-import firestore from '@react-native-firebase/firestore'
+import firestore from '@react-native-firebase/firestore';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const ChatScreen = ({route,navigation}) => {
   const {user, logout} = useContext(AuthContext);
@@ -103,6 +104,16 @@ const ChatScreen = ({route,navigation}) => {
     .add({...myMsg,createdAt:firestore.FieldValue.serverTimestamp()});
   }
 
+  // const handleIconPress = () => {
+  //   Alert.alert('Function called'); 
+  // };
+
+  // const renderCustomActions = (props) => (
+  //   <TouchableOpacity onPress={handleIconPress} style={styles.iconContainer}>
+  //     <FontAwesome name="photo" size={25} />
+  //   </TouchableOpacity>
+  // );
+
   return (
     <View style={{flex:1, backgroundColor:'#fff'}}>
        <GiftedChat
@@ -140,6 +151,7 @@ const ChatScreen = ({route,navigation}) => {
             return <InputToolbar {...props} 
               containerStyle={{borderTopWidth:1.5,borderTopColor:'blue'}}
               textInputStyle={{color:'black'}}
+              // renderActions={renderCustomActions}
             />
           }}
     />
@@ -149,4 +161,10 @@ const ChatScreen = ({route,navigation}) => {
 
 export default ChatScreen
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  // iconContainer: {
+  //   height: '100%',
+  //   justifyContent: 'center',
+  //   marginRight: -8, 
+  // },
+})

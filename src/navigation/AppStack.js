@@ -16,6 +16,7 @@ import MessagesScreen from '../Screens/MessagesScreen';
 
 import Octicons from 'react-native-vector-icons/Octicons';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import CustomChatScreen from '../Screens/CustomChatScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -98,7 +99,7 @@ const MessageStack = ({navigation}) => (
     <Stack.Screen name="messageScreen" component={MessagesScreen} options={{title:'Chat',headerTintColor:'blue'}} />
     <Stack.Screen
       name="Chat"
-      component={ChatScreen}
+      component={CustomChatScreen}
       options={({ route }) => ({
         headerTitle: () => (
           <View>
