@@ -1,15 +1,15 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Image, StyleSheet, Text, View } from 'react-native'
 import React, { useContext, useEffect } from 'react'
 import { AuthContext } from '../navigation/AuthProvider';
 
-const Message = ({time,message,sentBy}) => {
+const Message = ({time,message,sentBy,msgType}) => {
     const {user, logout} = useContext(AuthContext);
     // useEffect(()=>{
     //     console.log('sentBy',sentBy);
     //     console.log('loginUser',user.uid);
     // },[])
     const isOnLeft = (type) => {
-		if (sentBy != user.uid && type === "messageContainer") {
+		if (sentBy != user.uid && (type === "messageContainer")) {
 			return {
 				alignSelf: "flex-start",
 				backgroundColor: "#f0f0f0",
@@ -31,12 +31,17 @@ const Message = ({time,message,sentBy}) => {
 	};
   return (     
     <View style={styles.container}>
-        <View style={[styles.messageContainer, isOnLeft('messageContainer')]}>
+        <View style={[styles.messageContainer, isOnLeft('messageContainer'),{backgroundColor:(msgType == 'text' && sentBy == user.uid) ? 'darkblue' : (msgType == 'text' && sentBy != user.uid) ? '#f0f0f0' : 'transparent'}]}>
             <View style={styles.messageView}>
-                <Text style={[styles.message, isOnLeft('message')]}>{message}</Text>
+                {msgType == 'text' ? <Text style={[styles.message, isOnLeft('message')]}>{message}</Text> : (
+                <>
+                 <Image source={{uri:message}} style={{height:150,width:150}}/>
+                 <Text style={[styles.time, isOnLeft('time')]}>{time}</Text>
+                </>
+               )}
             </View>
             <View style={styles.timeView}>
-                <Text style={[styles.time, isOnLeft('time')]}>{time}</Text>
+                {msgType == 'text' ? <Text style={[styles.time, isOnLeft('time')]}>{time}</Text> : ''}
             </View>
         </View>
 
@@ -52,7 +57,7 @@ const styles = StyleSheet.create({
 		marginVertical: 5,
 	},
 	messageContainer: {
-		backgroundColor: 'darkblue',
+		// backgroundColor: 'darkblue',
 		maxWidth: "80%",
 		alignSelf: "flex-end",
 		flexDirection: "row",

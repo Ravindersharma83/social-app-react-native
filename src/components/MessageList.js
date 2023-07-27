@@ -115,19 +115,21 @@ const MessageList = ({route,navigation}) => {
     };
   }, [])
 
+  // scroll to top
   const User = useRef(0);
   const scrollView = useRef();
   return (
     <>
     <ScrollView 
       style={{backgroundColor:'#fff'}} 
+      // for auto scrolling to top in scrollview
       ref={ref => scrollView.current = ref}
-      onContentChange={()=>{
+      onContentSizeChange={()=>{
         scrollView.current.scrollToEnd({animated:true})
       }}
     >
      {messages.map((message,index)=>(
-      <Message key={index} sentBy={message?.sentBy} time={message?.createdAt.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }).toString()} message={message?.text}/>
+      <Message key={index} sentBy={message?.sentBy} time={message?.createdAt.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }).toString()} message={message?.text} msgType={message.msgType}/>
      ))}
     </ScrollView>
      <ChatInput loggedInUserId={loggedInUserId} otherUserId={otherUserId} docId={loggedInUserId > otherUserId ? otherUserId+"-"+loggedInUserId : loggedInUserId+"-"+otherUserId}/>

@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, RefreshContr
 import React,{useState,useEffect, useContext} from 'react'
 import firestore from '@react-native-firebase/firestore'
 import { AuthContext } from '../navigation/AuthProvider';
+import Feather from 'react-native-vector-icons/Feather';
 
 const MessagesScreen = ({navigation}) => {
   // const [appState, setAppState] = useState(AppState.currentState);
@@ -93,7 +94,9 @@ const MessagesScreen = ({navigation}) => {
     return(
       lastMsg.map((item,index)=>{
         return(
-          <Text style={styles.text} key={index}>{item.text}</Text>
+          <View key={index}>
+          {item.msgType == 'text' ? <Text style={styles.text}>{item.text}</Text> : <Text style={styles.text}><Feather name="image" size={23} color="#9f9f9f"/>	image</Text>}
+          </View>
         )
       })
     )
@@ -106,7 +109,7 @@ const MessagesScreen = ({navigation}) => {
       <View style={styles.myCard}>
         {item.userImg ? (<Image source={{uri:item.userImg}} style={styles.img}/>) : (<Image source={require("../Assets/images/user.png")} style={styles.img}/>)}
         <View>
-          <Text style={styles.text}>
+          <Text style={[styles.text,{color:'blue'}]}>
             {item.fname ? item.fname : 'Test User'}
           </Text>
           {/* <Text style={styles.text}>
@@ -151,6 +154,6 @@ const styles = StyleSheet.create({
   },
   text:{
     fontSize:18,
-    marginLeft:15
+    marginLeft:15,
   }
 })
