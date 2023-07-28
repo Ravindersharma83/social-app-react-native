@@ -158,6 +158,7 @@ const ChatInput = ({loggedInUserId,otherUserId,docId}) => {
 				style={styles.input}
 				value={message}
 				onChangeText={(text)=>setMessage(text)}
+				placeholderTextColor='black'
 			/>
 			<TouchableOpacity style={styles.rightIconButtonStyle} onPress={()=>setVisible(true)}>
 				<AntDesign name="paperclip" size={23} color="#9f9f9f"/>	

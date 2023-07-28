@@ -84,7 +84,7 @@ const ProfileScreen = ({navigation,route}) => {
           style={styles.userImg}
           source={{uri: userData ? userData.userImg || 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg' : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'}}
         />
-      <Text style={styles.userName}>{userData ? userData.fname || 'Test' : 'Test'} {userData ? userData.lname || 'User' : 'User'}</Text>
+      <Text style={[styles.userName,{color:'black'}]}>{userData ? userData.fname || 'Test' : 'Test'} {userData ? userData.lname || 'User' : 'User'}</Text>
       {/* <Text>{route.params ? route.params.userId : user.uid}</Text> */}
       <Text style={styles.aboutUser}>{userData ? userData.about || 'No details added' : 'No details added'}</Text>
 
@@ -192,6 +192,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
     textAlign: 'center',
+    color:'black'
   },
   userInfoSubTitle: {
     fontSize: 12,

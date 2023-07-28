@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View,TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View,TouchableOpacity,Appearance } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore'
@@ -22,6 +22,7 @@ import moment from 'moment';
 import ProgressiveImage from './ProgressiveImage';
 
 const PostCard = ({item, onDelete, onPress}) => {
+  const colorScheme = Appearance.getColorScheme();
   const {user} = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
 
@@ -73,15 +74,15 @@ const PostCard = ({item, onDelete, onPress}) => {
       />
       <UserInfoText>
         <TouchableOpacity onPress={onPress}>
-          <UserName>
+          <UserName style={{color:'black'}}>
           {userData ? userData.fname || 'Test' : 'Test'} {userData ? userData.lname || 'User' : 'User'}
           </UserName>
         </TouchableOpacity>
         {/* <PostTime>{item.postTime.toString()}</PostTime> */}
-        <PostTime>{moment(item.postTime.toDate()).fromNow()}</PostTime>
+        <PostTime style={{color:'black'}}>{moment(item.postTime.toDate()).fromNow()}</PostTime>
       </UserInfoText>
     </UserInfo>
-    <PostText>{item.post}</PostText>
+    <PostText style={{color:'black'}}>{item.post}</PostText>
     {item.postImg != null ? 
     // (<PostImg source={{uri:item.postImg}} /> )
     <ProgressiveImage 

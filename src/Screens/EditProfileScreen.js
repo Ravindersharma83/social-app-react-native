@@ -195,9 +195,8 @@ const EditProfileScreen = () => {
               </ImageBackground>
             </View>
           </TouchableOpacity>
-          <Text style={{marginTop: 10, fontSize: 18, fontWeight: 'bold'}}>
-            {/* {userData ? userData.fname : ''} {userData ? userData.lname : ''} */}
-            John Doe
+          <Text style={{marginTop: 10, fontSize: 18, fontWeight: 'bold',color:'black'}}>
+            {userData ? userData.fname : ''} {userData ? userData.lname : ''}
           </Text>
           {/* <Text>{user.uid}</Text> */}
         </View>

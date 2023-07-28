@@ -95,7 +95,7 @@ const MessagesScreen = ({navigation}) => {
       lastMsg.map((item,index)=>{
         return(
           <View key={index}>
-          {item.msgType == 'text' ? <Text style={styles.text}>{item.text}</Text> : <Text style={styles.text}><Feather name="image" size={23} color="#9f9f9f"/>	image</Text>}
+          {item.msgType == 'text' ? <Text style={styles.text}>{item.text}</Text> : <Text style={styles.text}><Feather name="image" size={23} color="black"/>	image</Text>}
           </View>
         )
       })
@@ -155,5 +155,6 @@ const styles = StyleSheet.create({
   text:{
     fontSize:18,
     marginLeft:15,
+    color:'black'
   }
 })
