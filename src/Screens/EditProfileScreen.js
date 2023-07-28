@@ -9,6 +9,7 @@ import {
   Alert,
   Dimensions,
   KeyboardAvoidingView,
+  PermissionsAndroid
 } from 'react-native';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -126,18 +127,42 @@ const EditProfileScreen = () => {
     });
   };
 
-  const choosePhotoFromLibrary = () => {
-    ImagePicker.openPicker({
-      width: 300,
-      height: 300,
-      cropping: true,
-      compressImageQuality: 0.7,
-    }).then((image) => {
-      console.log(image);
-      const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
-      setImage(imageUri);
-      setVisible(false);
-    });
+  const choosePhotoFromLibrary = async() => {
+    try {
+      // Check if the READ_EXTERNAL_STORAGE permission is granted
+			if (Platform.OS === 'android') {
+				const granted = await PermissionsAndroid.request(
+					PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+					{
+						title: 'Storage Permission',
+						message: 'This app needs access to your storage to pick images.',
+						buttonNeutral: 'Ask Me Later',
+						buttonNegative: 'Cancel',
+						buttonPositive: 'OK',
+					}
+					);
+					
+				if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+					console.log('You can use the gallery',granted);
+				  } else {
+					console.log('Gallery permission denied',granted);
+				  }
+			  }
+        ImagePicker.openPicker({
+          width: 300,
+          height: 300,
+          cropping: true,
+          compressImageQuality: 0.7,
+        }).then((image) => {
+          console.log(image);
+          const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
+          setImage(imageUri);
+          setVisible(false);
+        });
+    } catch (error) {
+      Alert.alert('Error while requesting storage permission:', error);
+    }
+
   };
   
   useEffect(() => {

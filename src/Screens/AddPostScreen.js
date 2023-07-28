@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Platform, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform, StyleSheet, Text, View,PermissionsAndroid } from 'react-native';
 import React, { useContext, useState } from 'react';
 import { AddImage, InputField, InputWrapper, StatusWrapper, SubmitBtn, SubmitBtnText } from '../styles/AddPost';
 
@@ -31,16 +31,40 @@ const AddPostScreen = () => {
     });
   }
 
-  const openGallery = ()=>{
-    ImagePicker.openPicker({
-      width: 1200,
-      height: 780,
-      cropping: true,
-    }).then(image => {
-      // console.log(image);
-      const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
-      setImage(imageUri);
-    });
+  const openGallery = async()=>{
+    try {
+      // Check if the READ_EXTERNAL_STORAGE permission is granted
+			if (Platform.OS === 'android') {
+				const granted = await PermissionsAndroid.request(
+					PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+					{
+						title: 'Storage Permission',
+						message: 'This app needs access to your storage to pick images.',
+						buttonNeutral: 'Ask Me Later',
+						buttonNegative: 'Cancel',
+						buttonPositive: 'OK',
+					}
+					);
+					
+				if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+					console.log('You can use the gallery',granted);
+				  } else {
+					console.log('Gallery permission denied',granted);
+				  }
+			  }
+        ImagePicker.openPicker({
+          width: 1200,
+          height: 780,
+          cropping: true,
+        }).then(image => {
+          // console.log(image);
+          const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
+          setImage(imageUri);
+        });
+    } catch (error) {
+      Alert.alert('Error while requesting storage permission:', error);
+    }
+
   }
 
   const submitPost = async () => {

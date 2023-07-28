@@ -1,4 +1,4 @@
-import { Alert, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity,View } from 'react-native'
+import { Alert, Image, Platform, PermissionsAndroid, StyleSheet, Text, TextInput, TouchableOpacity,View, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -96,7 +96,27 @@ const ChatInput = ({loggedInUserId,otherUserId,docId}) => {
 		});
 	  };
 
-	  const choosePhotoFromLibrary = () => {
+	  const choosePhotoFromLibrary = async() => {
+		try {
+			// Check if the READ_EXTERNAL_STORAGE permission is granted
+			if (Platform.OS === 'android') {
+				const granted = await PermissionsAndroid.request(
+					PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+					{
+						title: 'Storage Permission',
+						message: 'This app needs access to your storage to pick images.',
+						buttonNeutral: 'Ask Me Later',
+						buttonNegative: 'Cancel',
+						buttonPositive: 'OK',
+					}
+					);
+					
+				if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+					console.log('You can use the gallery',granted);
+				  } else {
+					console.log('Gallery permission denied',granted);
+				  }
+			  }
 		setVisible(false);
 		ImagePicker.openPicker({
 		  width: 300,
@@ -127,7 +147,7 @@ const ChatInput = ({loggedInUserId,otherUserId,docId}) => {
 		  task.on('state_changed', taskSnapshot => {
 			// console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
 			setTransferred(Math.round(taskSnapshot.bytesTransferred/taskSnapshot.totalBytes) * 100);
-			// console.log('progres---',transferred);
+			console.log('progres---',transferred);
 		  });
 	  
 		  try {
@@ -143,6 +163,9 @@ const ChatInput = ({loggedInUserId,otherUserId,docId}) => {
 			return null;
 		  }
 		});
+		} catch (error) {
+			Alert.alert('Error while requesting storage permission:', error);
+		}
 	  };
 
 
@@ -151,7 +174,7 @@ const ChatInput = ({loggedInUserId,otherUserId,docId}) => {
     <View style={styles.container}>
       <View style={styles.innerContainer}>
         <View style={styles.inputAndMicrophone}>
-			{image!==null ? <Image source={{uri:image}} style={{height:100,width:100}} /> : ''}
+			{image!==null ? <Image source={{uri:image}} style={{height:100,width:100}} /> : <>
 			<TextInput
 				multiline
 				placeholder={image!==null ? '' : 'Type something...'}
@@ -166,9 +189,12 @@ const ChatInput = ({loggedInUserId,otherUserId,docId}) => {
 			<TouchableOpacity style={styles.rightIconButtonStyle} onPress={takePhotoFromCamera}>
 				<Feather name="camera" size={23} color="#9f9f9f"/>	
 			</TouchableOpacity>
+			</>}
+
         </View>
 			<TouchableOpacity style={styles.sendButton} onPress={()=>sendMessage(message,'text')}>
-				<Feather name={(message || image) ? "send" : "mic"} size={23} color="#9f9f9f"/>	
+				
+				{image ? <ActivityIndicator size='large'/> : <Feather name={(message) ? "send" : "mic"} size={23} color="#9f9f9f"/>}	
 			</TouchableOpacity>
       	</View>
 
