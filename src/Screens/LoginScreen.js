@@ -14,7 +14,7 @@ const LoginScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../Assets/images/rn-social-logo.png')}
+        source={require('../Assets/images/social-media.png')}
         style={styles.logo}/>
         <Text style={styles.text}>Socialite Posts</Text>
         <FormInput

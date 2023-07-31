@@ -104,7 +104,11 @@ const MessageStack = ({navigation}) => (
         headerTitle: () => (
           <View>
              <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                <Image source={{uri:route.params.chatUser.userImg}} style={{marginLeft:-20,height:50,width:50,borderRadius:25,position:'relative',top:10}} />
+
+             {route.params.chatUser.userImg ? 
+              (<Image source={{uri:route.params.chatUser.userImg}} style={{marginLeft:-20,height:50,width:50,borderRadius:25,position:'relative',top:10}}/>) : 
+              (<Image source={require("../Assets/images/user.png")} style={{marginLeft:-20,height:50,width:50,borderRadius:25,position:'relative',top:10}}/>)}
+
               <Text style={{fontSize:24,marginLeft:10,color:'black'}}>{route.params?.name ? route.params.name : 'Test User'}</Text>
              </View>
             <View style={{flexDirection:'row',marginLeft:50,position:'relative',top:-10}}>

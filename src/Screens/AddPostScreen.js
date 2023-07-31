@@ -144,6 +144,7 @@ const AddPostScreen = () => {
                 numberOfLines={4}
                 value={post}
                 onChangeText={(content)=>setPost(content)}
+                placeholderTextColor='black'
             />
             {uploading ? (
               <StatusWrapper>

@@ -15,6 +15,7 @@ export const InputField = styled.TextInput`
     text-align: center;
     width:90%;
     margin-bottom: 15px;
+    color:black
 `;
 
 export const AddImage = styled.Image`
