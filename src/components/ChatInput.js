@@ -10,6 +10,8 @@ import Modal from "react-native-modal";
 import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
 
+import Geolocation from 'react-native-geolocation-service';
+
 
 
 
@@ -20,6 +22,9 @@ const ChatInput = ({loggedInUserId,otherUserId,docId}) => {
 	const [uploading, setUploading] = useState(false);
   	const [transferred, setTransferred] = useState(0);
 	const [showImage, setShowImage] = useState(false);
+
+	const [region, setRegion] = useState(null);
+	const [showCurrentLocation, setShowCurrentLocation] = useState(false);
 
 	const sendMessage = (message,msgType)=>{
 		try {
@@ -42,131 +47,152 @@ const ChatInput = ({loggedInUserId,otherUserId,docId}) => {
 	}
 
 
-	const takePhotoFromCamera = () => {
-		setVisible(false);
-		ImagePicker.openCamera({
-		  compressImageMaxWidth: 300,
-		  compressImageMaxHeight: 300,
-		  cropping: true,
-		  compressImageQuality: 0.7,
-		}).then(async (img) => {
-		  console.log(img);
-		  const imageUri = Platform.OS === 'ios' ? img.sourceURL : img.path;
-		  console.log(imageUri);
-		  setImage(imageUri);
+const takePhotoFromCamera = () => {
+	setVisible(false);
+	ImagePicker.openCamera({
+		compressImageMaxWidth: 300,
+		compressImageMaxHeight: 300,
+		cropping: true,
+		compressImageQuality: 0.7,
+	}).then(async (img) => {
+		console.log(img);
+		const imageUri = Platform.OS === 'ios' ? img.sourceURL : img.path;
+		console.log(imageUri);
+		setImage(imageUri);
 
-		  // upload image to firebase
-		//   if(image === null){
-		// 	return null;
-		//   }
-		  const uploadUri = imageUri;
-		  let filename = uploadUri.substring(uploadUri.lastIndexOf('/')+1); // for getting image name (abc.jpg)
-	  
-		  // add timestamp to filename for storing each image as unique name in cloud storage
-		  const extension = filename.split('.').pop();
-		  const name = filename.split('.').slice(0, -1).join('.');
-		  filename = name + Date.now() + '.' + extension;  // abc20230101.jpg
-		  
-		  setUploading(true);
-		  setTransferred(0);
-	  
-		  const storageRef = storage().ref(`messages-${docId}/${filename}`)
-		  const task = storageRef.putFile(uploadUri);
-	  
-		  // set transferred state
-		  task.on('state_changed', taskSnapshot => {
-			// console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
-			setTransferred(Math.round(taskSnapshot.bytesTransferred/taskSnapshot.totalBytes) * 100);
-			// console.log('progres---',transferred);
-		  });
-	  
-		  try {
-			await task;
-			const url = await storageRef.getDownloadURL();
-			setUploading(false);
-			setImage(null);
-			sendMessage(url,'img') // save data in firestore database
-			return url;
-	  
-		  } catch (error) {
-			console.log(error);
-			return null;
-		  }
-		  
+		// upload image to firebase
+	//   if(image === null){
+	// 	return null;
+	//   }
+		const uploadUri = imageUri;
+		let filename = uploadUri.substring(uploadUri.lastIndexOf('/')+1); // for getting image name (abc.jpg)
+	
+		// add timestamp to filename for storing each image as unique name in cloud storage
+		const extension = filename.split('.').pop();
+		const name = filename.split('.').slice(0, -1).join('.');
+		filename = name + Date.now() + '.' + extension;  // abc20230101.jpg
+		
+		setUploading(true);
+		setTransferred(0);
+	
+		const storageRef = storage().ref(`messages-${docId}/${filename}`)
+		const task = storageRef.putFile(uploadUri);
+	
+		// set transferred state
+		task.on('state_changed', taskSnapshot => {
+		// console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
+		setTransferred(Math.round(taskSnapshot.bytesTransferred/taskSnapshot.totalBytes) * 100);
+		// console.log('progres---',transferred);
 		});
-	  };
-
-	  const choosePhotoFromLibrary = async() => {
+	
 		try {
-			// Check if the READ_EXTERNAL_STORAGE permission is granted
-			if (Platform.OS === 'android') {
-				const granted = await PermissionsAndroid.request(
-					PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
-					{
-						title: 'Storage Permission',
-						message: 'This app needs access to your storage to pick images.',
-						buttonNeutral: 'Ask Me Later',
-						buttonNegative: 'Cancel',
-						buttonPositive: 'OK',
-					}
-					);
-					
-				if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-					console.log('You can use the gallery',granted);
-				  } else {
-					console.log('Gallery permission denied',granted);
-				  }
-			  }
-		setVisible(false);
-		ImagePicker.openPicker({
-		  width: 300,
-		  height: 300,
-		  cropping: true,
-		  compressImageQuality: 0.7,
-		}).then(async(image) => {
-		  console.log(image);
-		  const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
-		  setImage(imageUri);
-
-		  // upload image
-		  const uploadUri = imageUri;
-		  let filename = uploadUri.substring(uploadUri.lastIndexOf('/')+1); // for getting image name (abc.jpg)
-	  
-		  // add timestamp to filename for storing each image as unique name in cloud storage
-		  const extension = filename.split('.').pop();
-		  const name = filename.split('.').slice(0, -1).join('.');
-		  filename = name + Date.now() + '.' + extension;  // abc20230101.jpg
-		  
-		  setUploading(true);
-		  setTransferred(0);
-	  
-		  const storageRef = storage().ref(`messages-${docId}/${filename}`)
-		  const task = storageRef.putFile(uploadUri);
-	  
-		  // set transferred state
-		  task.on('state_changed', taskSnapshot => {
-			// console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
-			setTransferred(Math.round(taskSnapshot.bytesTransferred/taskSnapshot.totalBytes) * 100);
-			console.log('progres---',transferred);
-		  });
-	  
-		  try {
-			await task;
-			const url = await storageRef.getDownloadURL();
-			setUploading(false);
-			setImage(null);
-			sendMessage(url,'img') // save data in firestore database
-			return url;
-	  
-		  } catch (error) {
-			console.log(error);
-			return null;
-		  }
-		});
+		await task;
+		const url = await storageRef.getDownloadURL();
+		setUploading(false);
+		setImage(null);
+		sendMessage(url,'img') // save data in firestore database
+		return url;
+	
 		} catch (error) {
-			Alert.alert('Error while requesting storage permission:', error);
+		console.log(error);
+		return null;
 		}
-	  };
+		
+	});
+	};
+
+	const choosePhotoFromLibrary = async() => {
+	try {
+		// Check if the READ_EXTERNAL_STORAGE permission is granted
+		if (Platform.OS === 'android') {
+			const granted = await PermissionsAndroid.request(
+				PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+				{
+					title: 'Storage Permission',
+					message: 'This app needs access to your storage to pick images.',
+					buttonNeutral: 'Ask Me Later',
+					buttonNegative: 'Cancel',
+					buttonPositive: 'OK',
+				}
+				);
+				
+			if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+				console.log('You can use the gallery',granted);
+				} else {
+				console.log('Gallery permission denied',granted);
+				}
+			}
+	setVisible(false);
+	ImagePicker.openPicker({
+		width: 300,
+		height: 300,
+		cropping: true,
+		compressImageQuality: 0.7,
+	}).then(async(image) => {
+		console.log(image);
+		const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
+		setImage(imageUri);
+
+		// upload image
+		const uploadUri = imageUri;
+		let filename = uploadUri.substring(uploadUri.lastIndexOf('/')+1); // for getting image name (abc.jpg)
+	
+		// add timestamp to filename for storing each image as unique name in cloud storage
+		const extension = filename.split('.').pop();
+		const name = filename.split('.').slice(0, -1).join('.');
+		filename = name + Date.now() + '.' + extension;  // abc20230101.jpg
+		
+		setUploading(true);
+		setTransferred(0);
+	
+		const storageRef = storage().ref(`messages-${docId}/${filename}`)
+		const task = storageRef.putFile(uploadUri);
+	
+		// set transferred state
+		task.on('state_changed', taskSnapshot => {
+		// console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
+		setTransferred(Math.round(taskSnapshot.bytesTransferred/taskSnapshot.totalBytes) * 100);
+		console.log('progres---',transferred);
+		});
+	
+		try {
+		await task;
+		const url = await storageRef.getDownloadURL();
+		setUploading(false);
+		setImage(null);
+		sendMessage(url,'img') // save data in firestore database
+		return url;
+	
+		} catch (error) {
+		console.log(error);
+		return null;
+		}
+	});
+	} catch (error) {
+		Alert.alert('Error while requesting storage permission:', error);
+	}
+	};
+
+const chooseLocation = () => {
+	Geolocation.getCurrentPosition(
+		position => {
+			console.log(position);
+			const newRegion = {
+				latitude: position.coords.latitude,
+				longitude: position.coords.longitude,
+				latitudeDelta: 0,
+				longitudeDelta: 0.1,
+			  };
+			  setRegion(`${position.coords.latitude}-${position.coords.longitude}`);
+			  sendMessage(`${position.coords.latitude}-${position.coords.longitude}`, 'loc');
+			  setVisible(false);
+		},
+		error => {
+			console.log(error.code, error.message);
+		},
+		{enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+		);
+}
 
 
 
@@ -235,9 +261,9 @@ const ChatInput = ({loggedInUserId,otherUserId,docId}) => {
 						<Text style={{color:'#fff',marginLeft:10}}>Audio</Text>
 					</View>
 					<View>
-						<View style={{height:60,width:60,borderRadius:30,backgroundColor:'green',justifyContent:'center',alignItems:'center',marginTop:10,marginLeft:25}}>
+						<TouchableOpacity onPress={chooseLocation} style={{height:60,width:60,borderRadius:30,backgroundColor:'green',justifyContent:'center',alignItems:'center',marginTop:10,marginLeft:25}}>
 							<Ionicons name="location" size={30} color="#fff"/>
-						</View>
+						</TouchableOpacity>
 						<Text style={{color:'#fff',marginLeft:30}}>Location</Text>
 					</View>
 					<View>

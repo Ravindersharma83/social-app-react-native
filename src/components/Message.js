@@ -1,9 +1,18 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
 import React, { useContext, useEffect } from 'react'
 import { AuthContext } from '../navigation/AuthProvider';
+import MapComponent from './MapComponent';
 
 const Message = ({time,message,sentBy,msgType}) => {
     const {user, logout} = useContext(AuthContext);
+	let coordinate = [];
+	let latitude = '';
+	let longitude = '';
+	if(msgType == 'loc'){
+		coordinate = message.split('-');
+		latitude = coordinate[0];
+		longitude = coordinate[1];
+	}
     // useEffect(()=>{
     //     console.log('sentBy',sentBy);
     //     console.log('loginUser',user.uid);
@@ -33,12 +42,16 @@ const Message = ({time,message,sentBy,msgType}) => {
     <View style={styles.container}>
         <View style={[styles.messageContainer, isOnLeft('messageContainer'),{backgroundColor:(msgType == 'text' && sentBy == user.uid) ? 'darkblue' : (msgType == 'text' && sentBy != user.uid) ? '#f0f0f0' : 'transparent'}]}>
             <View style={styles.messageView}>
-                {msgType == 'text' ? <Text style={[styles.message, isOnLeft('message')]}>{message}</Text> : (
+                {msgType == 'text' ? <Text style={[styles.message, isOnLeft('message')]}>{message}</Text> : msgType == 'img' ? (
                 <>
-                 <Image source={{uri:message}} style={{height:150,width:150}}/>
+                 <Image source={{uri:message}} style={{height:220,width:220}}/>
                  <Text style={[styles.time, isOnLeft('time')]}>{time}</Text>
                 </>
-               )}
+               ) : msgType == 'loc' ? <>
+			   <MapComponent latitude={latitude} longitude={longitude}/>
+			   <Text style={[styles.time, isOnLeft('time')]}>{time}</Text>
+			   </> 
+			   : ''}
             </View>
             <View style={styles.timeView}>
                 {msgType == 'text' ? <Text style={[styles.time, isOnLeft('time')]}>{time}</Text> : ''}
